@@ -61,6 +61,8 @@ func processTestData(testData *model.TestData) {
 }
 
 func getTestData() []*model.TestData {
+	testDataList := []*model.TestData{}
+
 	input := []string{
 		"100 5",
 		"PKG1 50 30 OFR001",
@@ -70,7 +72,6 @@ func getTestData() []*model.TestData {
 		"PKG5 155 95 NA",
 		"2 70 200",
 	}
-
 	expectedOutput := []string{
 		"PKG1 0 750 3.98",
 		"PKG2 0 1475 1.78",
@@ -78,8 +79,31 @@ func getTestData() []*model.TestData {
 		"PKG4 105 1395 0.85",
 		"PKG5 0 2125 4.19",
 	}
-
-	testDataList := []*model.TestData{}
 	testDataList = append(testDataList, &model.TestData{Input: input, ExpectedOutput: expectedOutput})
+
+	input = []string{
+		"100 8",
+		"PKG1 50 30 OFR001",
+		"PKG2 75 125 OFR008",
+		"PKG3 175 100 OFR003",
+		"PKG4 110 60 OFR002",
+		"PKG5 155 95 NA",
+		"PKG6 50 20 NA",
+		"PKG7 50 30 NA",
+		"PKG8 50 40 NA",
+		"2 70 200",
+	}
+	expectedOutput = []string{
+		"PKG1 0 750 0.42",
+		"PKG2 0 1475 1.78",
+		"PKG3 0 2350 2.56",
+		"PKG4 105 1395 0.85",
+		"PKG5 0 2125 4.91",
+		"PKG6 0 700 0.28",
+		"PKG7 0 750 0.42",
+		"PKG8 0 800 0.57",
+	}
+	testDataList = append(testDataList, &model.TestData{Input: input, ExpectedOutput: expectedOutput})
+
 	return testDataList
 }

@@ -90,7 +90,6 @@ func calculateDeliveryTime() {
 		}
 
 		vehicleIdx := getNextAvailableVehicle() //Find out the first available vehicle and later get it's start time
-		// fmt.Println("vehicleIdx: ", vehicleIdx)
 		deliveryStartTime := vehicleList[vehicleIdx].DeliveryStartTime
 		var longestDeliveryTime float64
 		for _, pkgId := range pkgComb.PackageIDs {
@@ -99,10 +98,8 @@ func calculateDeliveryTime() {
 				longestDeliveryTime = deliveryTime
 			}
 		}
-		// fmt.Println("longestDeliveryTime: ", longestDeliveryTime)
 		vehicleList[vehicleIdx].DeliveryStartTime = longestDeliveryTime * 2 //Set the vehicle next available time
 		calculatedPackages = append(calculatedPackages, pkgComb.PackageIDs...)
-		// fmt.Println("calculatedPackages: ", calculatedPackages)
 		if len(calculatedPackages) == noOfPackages {
 			break
 		}
@@ -149,22 +146,21 @@ func setDeliveryTime(pkgId string, deliveryStartTime float64) float64 {
 }
 
 func loopPkgCombination(loopIdx int, previousPkgIdx int, allPkgCombination []*model.PackageCombination, sumOfWeight int, sumOfDistance int, pkgArray []string) []*model.PackageCombination {
-	pkgList := pkgDetailList[loopIdx:]
-
+	pkgList := pkgDetailList[loopIdx:] //Only loop
 	for pkgIdx, pkg := range pkgList {
-		if loopIdx > 0 && (pkgIdx+loopIdx) <= previousPkgIdx { //So that we wont add same PackageId
+		if loopIdx > 0 && (pkgIdx+loopIdx) <= previousPkgIdx { //So that we wont add the same PackageId or package combination in different order
 			continue
 		}
 		var newSumOfWeight int = sumOfWeight + pkg.PkgWeight
 		var newSumOfDistance int = sumOfDistance + pkg.Distance
 		var newPkgArray []string = append(pkgArray, pkg.PkgId)
-		if newSumOfWeight < maxCarryWeight {
+		if newSumOfWeight <= maxCarryWeight {
 			pkgCombination := &model.PackageCombination{TotalWeight: newSumOfWeight, TotalDistance: newSumOfDistance, PackageIDs: newPkgArray}
 			allPkgCombination = append(allPkgCombination, pkgCombination)
 		}
 
-		if loopIdx < (noOfVehicle / 2) {
-			allPkgCombination = loopPkgCombination((loopIdx + 1), pkgIdx, allPkgCombination, newSumOfWeight, newSumOfDistance, newPkgArray)
+		if loopIdx < (noOfPackages / noOfVehicle) {
+			allPkgCombination = loopPkgCombination((loopIdx + 1), (pkgIdx + loopIdx), allPkgCombination, newSumOfWeight, newSumOfDistance, newPkgArray)
 		}
 	}
 	return allPkgCombination
